@@ -122,6 +122,48 @@ describe('translate: tool calls', () => {
       { type: 'finish', reason: { kind: 'tool-calls' } },
     ])
   })
+  it('preserves tool-call identity when continuation deltas repeat empty strings', async () => {
+    const chunks = await collect(translate(feed(
+      firstChunk,
+      {
+        choices: [{
+          delta: {
+            tool_calls: [{
+              index: 0,
+              id: 'call_00_x',
+              type: 'function',
+              function: { name: 'get_weather', arguments: '' },
+            }],
+          },
+        }],
+      },
+      {
+        choices: [{
+          delta: {
+            tool_calls: [{
+              index: 0,
+              id: '',
+              type: 'function',
+              function: { name: '', arguments: '{"city":"Paris"}' },
+            }],
+          },
+        }],
+      },
+      { choices: [{ delta: {}, finish_reason: 'tool_calls' }] },
+      DONE,
+    )))
+
+    expect(chunks[3]).toEqual({
+      type: 'block-end',
+      index: 0,
+      block: {
+        type: 'tool-call',
+        id: 'call_00_x',
+        name: 'get_weather',
+        arguments: '{"city":"Paris"}',
+      },
+    })
+  })
 
   it('disambiguates parallel tool calls by wire index', async () => {
     const chunks = await collect(translate(feed(
