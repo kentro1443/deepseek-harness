@@ -167,6 +167,48 @@ describe('ModelSelect reasoning effort', () => {
     expect(screen.queryByRole('button', { name: '重试' })).toBeNull()
   })
 
+  it('collapses provider groups except the one serving the current selection', () => {
+    const directory = createSnapshotStore<ModelDirectoryState>(state({
+      groups: [
+        {
+          id: 'deepseek-official',
+          name: 'DeepSeek',
+          models: [{ id: 'deepseek-v4-flash', name: 'DeepSeek-V4-Flash', reasoning }],
+        },
+        {
+          id: 'other',
+          name: 'Other',
+          models: [
+            { id: 'other-a', name: 'Other-A' },
+            { id: 'other-b', name: 'Other-B' },
+          ],
+        },
+      ],
+    }))
+    render(<ModelSelect
+      locked={false}
+      available
+      directory={directory}
+      load={vi.fn()}
+      select={vi.fn().mockResolvedValue(true)}
+      t={t}
+    />)
+
+    fireEvent.click(screen.getByRole('button', { name: /当前 DeepSeek-V4-Flash/ }))
+    fireEvent.click(screen.getByRole('menuitem', { name: /模型/ }))
+    expect(screen.getAllByRole('menuitemradio').map(item => item.textContent)).toEqual(['DeepSeek-V4-Flash'])
+
+    const other = screen.getByRole('menuitem', { name: /Other/ })
+    expect(other.getAttribute('aria-expanded')).toBe('false')
+    fireEvent.click(other)
+    expect(other.getAttribute('aria-expanded')).toBe('true')
+    expect(screen.getAllByRole('menuitemradio').map(item => item.textContent))
+      .toEqual(['DeepSeek-V4-Flash', 'Other-A', 'Other-B'])
+
+    fireEvent.click(screen.getByRole('menuitem', { name: /DeepSeek/ }))
+    expect(screen.getAllByRole('menuitemradio').map(item => item.textContent)).toEqual(['Other-A', 'Other-B'])
+  })
+
   it('renders no Agent-bound control for an addressed subagent session', () => {
     const load = vi.fn()
     render(<ModelSelect
