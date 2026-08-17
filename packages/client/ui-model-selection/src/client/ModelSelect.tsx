@@ -3,7 +3,10 @@
  * Two-level selection per figma 496:26454's MenuDropdown: the root menu is
  * the Model / Effort row pair (label + current value + a right chevron),
  * each drilling into its own list — the provider-grouped model list over
- * the shared directory, and the effort levels. The trigger (313:14108's
+ * the shared directory, and the effort levels. Each provider group in that
+ * list is a disclosure so a provider advertising a long catalog stays one
+ * scannable row until opened; the group holding the current selection opens
+ * by default. The trigger (313:14108's
  * ToggleButton) shows both: model name + effort in the caption tone.
  * Data and submission ride the SAME per-session ModelDirectory as the
  * /model popup; exact-model reasoning metadata and the selected effort come
@@ -52,6 +55,11 @@ export function ModelSelect(
   )
   const [open, setOpen] = useState(false)
   const [pane, setPane] = useState<Pane>('root')
+  // Explicit disclosure toggles, keyed by provider group id. A group absent
+  // from the record follows the default (open only for the provider serving
+  // the current selection), so a group that loads after the menu opened still
+  // picks up that default; closing the menu drops the overrides.
+  const [disclosed, setDisclosed] = useState<Readonly<Record<string, boolean>>>({})
   // The in-menu error strip serves catalog loads (its Retry re-runs the
   // load); a rejected SELECTION announces through the transient toast
   // instead, so the strip renders only while the latest failure-capable
@@ -135,7 +143,15 @@ export function ModelSelect(
   const close = (restoreFocus = false): void => {
     setOpen(false)
     setPane('root')
+    setDisclosed({})
     if (restoreFocus) queueMicrotask(() => { triggerRef.current?.focus() })
+  }
+
+  const groupOpen = (groupId: string): boolean => disclosed[groupId] ?? groupId === state.current?.provider
+
+  const toggleGroup = (groupId: string): void => {
+    const next = !groupOpen(groupId)
+    setDisclosed(previous => ({ ...previous, [groupId]: next }))
   }
 
   const moveFocus = (offset: number): void => {
@@ -286,35 +302,55 @@ export function ModelSelect(
               <div className={clsx(css.groups, 'scrollable')}>
                 {state.groups.map((group) => {
                   const headingId = `${id}-${group.id}`
+                  const listId = `${headingId}-models`
+                  const expanded = groupOpen(group.id)
                   return (
                     <section role="group" aria-labelledby={headingId} className={css.group} key={group.id}>
-                      <div className={css.groupTitle} id={headingId}>{group.name}</div>
-                      {group.models.map((model) => {
-                        const selected = state.current?.provider === group.id && state.current.model === model.id
-                        return (
-                          <button
-                            ref={itemRef()}
-                            type="button"
-                            role="menuitemradio"
-                            aria-checked={selected}
-                            className={clsx(css.option, selected && css.selected)}
-                            key={model.id}
-                            title={model.name}
-                            disabled={busy}
-                            onClick={() => { choose({ provider: group.id, model: model.id }) }}
-                          >
-                            <span className={css.optionCopy}>
-                              <span className={css.modelName}>{model.name}</span>
-                              {model.description !== undefined && (
-                                <span className={css.description}>{model.description}</span>
-                              )}
-                            </span>
-                            <span className={css.check}>
-                              {selected ? <IconCheckOutline16 /> : null}
-                            </span>
-                          </button>
-                        )
-                      })}
+                      <button
+                        ref={itemRef()}
+                        type="button"
+                        role="menuitem"
+                        id={headingId}
+                        className={css.groupTitle}
+                        aria-expanded={expanded}
+                        aria-controls={listId}
+                        title={group.name}
+                        onClick={() => { toggleGroup(group.id) }}
+                      >
+                        <IconChevronRightOutline14
+                          className={clsx(css.groupChevron, expanded && css.groupChevronOpen)}
+                        />
+                        <span className={css.groupName}>{group.name}</span>
+                        <span className={css.groupCount}>{group.models.length}</span>
+                      </button>
+                      <div id={listId} hidden={!expanded}>
+                        {expanded && group.models.map((model) => {
+                          const selected = state.current?.provider === group.id && state.current.model === model.id
+                          return (
+                            <button
+                              ref={itemRef()}
+                              type="button"
+                              role="menuitemradio"
+                              aria-checked={selected}
+                              className={clsx(css.option, selected && css.selected)}
+                              key={model.id}
+                              title={model.name}
+                              disabled={busy}
+                              onClick={() => { choose({ provider: group.id, model: model.id }) }}
+                            >
+                              <span className={css.optionCopy}>
+                                <span className={css.modelName}>{model.name}</span>
+                                {model.description !== undefined && (
+                                  <span className={css.description}>{model.description}</span>
+                                )}
+                              </span>
+                              <span className={css.check}>
+                                {selected ? <IconCheckOutline16 /> : null}
+                              </span>
+                            </button>
+                          )
+                        })}
+                      </div>
                     </section>
                   )
                 })}

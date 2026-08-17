@@ -137,16 +137,55 @@
   margin-top: 4px;
 }
 
+/* Disclosure header: the provider row stays a caption-toned title while
+   carrying the open/close affordance for its model list. */
 .groupTitle {
   position: sticky;
   top: 0;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
   padding: 5px 8px 3px;
+  border: none;
+  outline: none;
   background: var(--dsw-specific-menu);
   color: var(--dsw-alias-label-tertiary);
   font-size: 12px;
   line-height: 18px;
   font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.groupTitle:hover,
+.groupTitle:focus-visible {
+  color: var(--dsw-alias-label-secondary);
+}
+
+.groupChevron {
+  flex: 0 0 auto;
+  transition: transform 120ms ease;
+}
+
+.groupChevronOpen {
+  transform: rotate(90deg);
+}
+
+.groupName {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Model count keeps a collapsed provider informative. */
+.groupCount {
+  flex: 0 0 auto;
+  color: var(--dsw-alias-label-dimmed);
+  font-variant-numeric: tabular-nums;
 }
 
 .option {
