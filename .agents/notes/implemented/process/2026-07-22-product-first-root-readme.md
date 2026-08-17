@@ -30,4 +30,4 @@ Detailed package and service inventories remain at their owning documentation. T
 
 ## Consequences
 
-Reviewers can distinguish factual refreshes from editorial rewrites, and future updates retain established wording unless its meaning becomes false or incomplete. The README must still change with affected commands, entry points, release-stage claims, or high-level capability families, while exhaustive detail remains linked rather than copied.
+Reviewers can distinguish factual refreshes from editorial rewrites, and future updates retain established wording unless its meaning becomes false or incomplete. The README must still change with affected commands, entry points, release-stage claims, or high-level capability families, while exhaustive detail remains linked rather than copied. This fork's root README is instead an author implementation catalog; see [fork README implementation catalog](2026-08-17-fork-readme-implementation-catalog.md).

@@ -1,74 +1,23 @@
-# DeepSeek Harness
+# Fork 实现
 
 [English](README.md) | 中文
 
-DeepSeek Harness（`dsh`）是由 [DeepSeek AI](https://deepseek.com) 开发的开源 agent harness（智能体框架）。
+本 README 只列出 Nguyen Ba Huan 在本 checkout 中交付的实现。该作者每次新提交后，都要新增或刷新对应章节，让读者能看到这次提交改了什么。
 
-它采用**一切皆插件**的架构，并由 [Cordis](https://github.com/cordiverse/cordis) 驱动，其设计参见论文 [_A Programming Paradigm for Spatiotemporal Composability_](https://github.com/cordiverse/paper)。
+## Review Changes 标签页与 git diff 面板
 
-## 开发者预览
+`6c9f6d483f` — `feat(ui): add review changes tab and git diff panel`
 
-DeepSeek Harness 目前处于 _开发者预览_ 阶段，正在快速迭代。**未来将出现破坏兼容性的变更。**
+只要当前会话存在文件 diff，会话标题栏就会显示 Changes 操作，并带上会话范围的 `+additions` / `-deletions`。点击该操作，或点击一轮里已编辑文件卡片上的 Review，会在详情面板打开 review 目标：把会话中的全部 diff 汇总成按文件排列的 `DiffBlock` 卡片，并显示分支与变更计数。决策记录：[会话 Review Changes](.agents/notes/implemented/feature/2026-08-23-chat-review-changes-diff-panel.md)。
 
-## 运行
+## Composer 提供方分组展开
 
-### 通过 `npm` 运行
+`592569ea15` — `feat(ui-model-selection): collapse composer model list by provider`
 
-安装 `Node.js`，然后运行：
+Composer 模型菜单里的每个提供方分组都是展开控件：标题是带 `aria-expanded` 的 `menuitem`，还有 chevron 和该组模型数量。当前选中项所属的提供方默认展开；显式切换会保留到菜单关闭；收起的模型不会渲染，因此方向键焦点只在可见行之间移动。决策记录：[Composer 提供方展开](.agents/notes/implemented/feature/2026-08-17-composer-provider-group-disclosure.md)。
 
-```sh
-npx @deepseek-ai/dsh web
-```
+## OpenAI 兼容的工具调用 delta
 
-该命令会启动 Web UI，默认地址为 `http://127.0.0.1:3080`。详见 [Web UI 指南](docs/user/guide/index.md)。
+`5a600719a6` — `Add OpenAI compatible capability`
 
-### 从源码运行
-
-如需从仓库源码运行：
-
-```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
-pnpm install
-pnpm run build
-pnpm dsh web
-```
-
-## 社区与支持
-
-- 欢迎通过 [GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions) 提交反馈或 bug 报告。
-- 为你的插件仓库添加 [`dsh-plugin`](https://github.com/topics/dsh-plugin) 话题，便于被发现。
-- 欢迎加入 DeepSeek Harness 企微群：扫码添加企微小助手并填写入群问卷，完成后小助手会邀请你入群。
-
-<table>
-  <thead>
-    <tr>
-      <th align="center">企微小助手</th>
-      <th align="center">入群问卷</th>
-      <th align="center">微信公众号</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td align="center"><img src="assets/community-wecom-assistant.png" alt="DeepSeek Harness 企微小助手二维码" width="180" height="180"></td>
-      <td align="center"><a href="https://trtgsjkv6r.feishu.cn/share/base/form/shrcnIt5twSVdLGD52KJBckGCgg"><img src="assets/community-wecom-survey.png" alt="DeepSeek Harness 入群问卷二维码" width="180" height="180"></a></td>
-      <td align="center"><img src="assets/community-wechat-official-account.png" alt="DeepSeek Harness 团队微信公众号二维码" width="180" height="180"></td>
-    </tr>
-  </tbody>
-</table>
-
-## 参与贡献
-
-参见 [CONTRIBUTING.md](CONTRIBUTING.md)。
-
-## 开发
-
-请先阅读[开发指南](docs/development.md)与[架构文档](docs/architecture.md)。
-
-面向 agent：请遵循 [AGENTS.md](AGENTS.md)。
-
-## 许可证
-
-[MIT](LICENSE)
-
-第三方依赖及其许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+`@deepseek-ai/dsh-llm-deepseek` 中的 `translate()` 仅在 delta 值非空时写入流式工具调用的 `id` 或 `function.name`。因此，在后续分片里重复发送空字符串的 OpenAI 兼容提供方会保留首个 delta 建立的身份，而不会把它覆盖掉。
