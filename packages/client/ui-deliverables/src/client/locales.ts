@@ -10,6 +10,10 @@ export const zh = {
   'produced.more': '+ {count} 个文件',
   'produced.open': '打开 {name}',
   'produced.showInFolder': '在文件夹中显示',
+  'produced.editedCount': '已编辑 {count} 个文件',
+  'produced.undo': '撤销',
+  'produced.review': '审查',
+  'produced.changes': '变更',
 }
 
 /** English dictionary (same key set). */
@@ -19,6 +23,10 @@ export const en: Record<DeliverablesKey, string> = {
   'produced.more': '+ {count} files',
   'produced.open': 'Open {name}',
   'produced.showInFolder': 'Show in folder',
+  'produced.editedCount': 'Edited {count} file(s)',
+  'produced.undo': 'Undo',
+  'produced.review': 'Review',
+  'produced.changes': 'Changes',
 }
 
 /** Union of this namespace's dictionary keys. */

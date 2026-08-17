@@ -10,7 +10,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@deepseek-ai/dsh-client-locale/client'
-import type { ViewTab } from './contract/views.ts'
+import type { SelectionTarget, ViewTab } from './contract/views.ts'
 import type {
   ApprovalWait, ChatNodeTurnDataInjected, ChatScrollPosition, ChatViewInjected, ComposerBarInjected,
   ComposerChainProps, ConversationInjected, ConversationSessionHeaderInjected, ConversationSessionInjected,
@@ -35,6 +35,7 @@ import { queueDockEntry } from './queue/QueueDock.tsx'
 import { ConversationRoot } from './skeleton/ConversationRoot.tsx'
 import { ConversationSession, ConversationSessionHeader } from './skeleton/ConversationSession.tsx'
 import { DetailsPanel } from './skeleton/DetailsPanel.tsx'
+import { ReviewChangesAction } from './skeleton/ReviewChangesAction.tsx'
 import { en, NS, zh, type ConversationKey } from './locales.ts'
 import { registerConversationNodes } from './conversation-nodes/register.ts'
 import { registerChatNodeRenderers } from './chat/register-node-renderers.ts'
@@ -267,6 +268,19 @@ export function apply(ctx: Context): void {
       open: (id) => { sessions.open(id) },
     }),
   }, ConversationSessionHeader)
+
+  slots.register({
+    name: 'conversation.session.header.utilities',
+    id: 'review-changes',
+    locale: NS,
+    store: chatStore,
+    inject: (_sessionId: SessionId, actions: BoundActions<typeof chatStore>) => ({
+      openDetails: (target: SelectionTarget) => {
+        actions.select(target)
+        layout.openDetails()
+      },
+    }),
+  }, ReviewChangesAction)
 
   // The default composer body: its own single slot inside the composer
   // chain's fallback. Public machine surface arrives via the

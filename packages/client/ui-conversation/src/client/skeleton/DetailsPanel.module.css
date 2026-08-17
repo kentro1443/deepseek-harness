@@ -92,3 +92,87 @@
 .code[data-error] {
   color: var(--dsw-alias-state-error-primary);
 }
+.titleCluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.diffBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-family: var(--ds-font-family-code);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.addStat {
+  color: var(--dsw-alias-state-success-primary);
+}
+
+.delStat {
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.diffList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.diffSubheader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--dsw-alias-label-secondary);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
+}
+
+.branchInfo {
+  font-family: var(--ds-font-family-code);
+}
+
+.fileCount {
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.fileDiffCard {
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--dsw-alias-bg-base);
+}
+
+.fileDiffHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--dsw-alias-interactive-bg-hover);
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
+  font-size: 12px;
+  font-family: var(--ds-font-family-code);
+}
+
+.filePath {
+  font-weight: 500;
+  color: var(--dsw-alias-label-primary);
+  word-break: break-all;
+}
+
+.fileDiffStats {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.diffBlock {
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
